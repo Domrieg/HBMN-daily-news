@@ -4,7 +4,7 @@ Daily Portfolio Alert — GitHub Actions Version
 Credentials werden als Umgebungsvariablen übergeben (GitHub Secrets).
 """
 
-import smtplib, ssl, requests, time, socket, os
+import smtplib, ssl, requests, time, os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta, timezone
@@ -247,7 +247,7 @@ def send_email(subject, html_body):
     msg["From"]    = EMAIL_FROM
     msg["To"]      = EMAIL_TO
     msg.attach(MIMEText(html_body, "html"))
-    host_ip = socket.getaddrinfo(SMTP_HOST, SMTP_PORT, socket.AF_INET)[0][4][0]
+    
     ctx = ssl.create_default_context()
     with smtplib.SMTP(host_ip, SMTP_PORT, timeout=30) as s:
         s.ehlo("localhost")
