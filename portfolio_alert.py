@@ -241,6 +241,15 @@ def build_html(rows, movers_up, movers_dn, news_items, today):
   </div>
 </div></body></html>"""
 
+class _SMTP_SSL_IPv4(smtplib.SMTP_SSL):
+    def _get_socket(self, host, port, timeout):
+        af, socktype, proto, _, sa = socket.getaddrinfo(
+            host, port, socket.AF_INET, socket.SOCK_STREAM)[0]
+        sock = socket.socket(af, socktype, proto)
+        sock.settimeout(timeout)
+        sock.connect(sa)
+        return self.context.wrap_socket(sock, server_hostname=self._host)
+
 def send_email(subject, html_body):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -248,17 +257,10 @@ def send_email(subject, html_body):
     msg["To"]      = EMAIL_TO
     msg.attach(MIMEText(html_body, "html"))
     ctx = ssl.create_default_context()
-    _orig = socket.getaddrinfo
-    def _ipv4(host, port, family=0, type=0, proto=0, flags=0):
-        return _orig(host, port, socket.AF_INET, type, proto, flags)
-    socket.getaddrinfo = _ipv4
-    try:
-        with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=ctx, timeout=30) as s:
-            s.login(EMAIL_FROM, EMAIL_PASSWORD)
-            s.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
-        print(f"Mail gesendet an {EMAIL_TO}")
-    finally:
-        socket.getaddrinfo = _orig
+    with _SMTP_SSL_IPv4(SMTP_HOST, SMTP_PORT, context=ctx, timeout=30) as s:
+        s.login(EMAIL_FROM, EMAIL_PASSWORD)
+        s.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
+    print(f"Mail gesendet an {EMAIL_TO}")
 
 def main():
     today   = datetime.now().strftime("%Y-%m-%d")
