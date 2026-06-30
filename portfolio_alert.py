@@ -14,7 +14,7 @@ EMAIL_FROM     = os.environ["EMAIL_FROM"]      # domrieger@hotmail.com
 EMAIL_TO       = os.environ["EMAIL_TO"]        # domrieger@hotmail.com
 EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]  # App-Passwort
 SMTP_HOST      = "smtp-mail.outlook.com"
-SMTP_PORT      = 587
+SMTP_PORT      = 465
 
 # ─── Portfolio ────────────────────────────────────────────────────────────────
 PORTFOLIO = [
@@ -248,10 +248,7 @@ def send_email(subject, html_body):
     msg["To"]      = EMAIL_TO
     msg.attach(MIMEText(html_body, "html"))
     ctx = ssl.create_default_context()
-    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as s:
-        s.ehlo("localhost")
-        s.starttls(context=ctx)
-        s.ehlo("localhost")
+    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=ctx, timeout=30) as s:
         s.login(EMAIL_FROM, EMAIL_PASSWORD)
         s.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
     print(f"Mail gesendet an {EMAIL_TO}")
