@@ -247,9 +247,8 @@ def send_email(subject, html_body):
     msg["From"]    = EMAIL_FROM
     msg["To"]      = EMAIL_TO
     msg.attach(MIMEText(html_body, "html"))
-    
     ctx = ssl.create_default_context()
-    with smtplib.SMTP(host_ip, SMTP_PORT, timeout=30) as s:
+    with smtplib.SMTP(SMTP_HOST, SMTP_PORT, timeout=30) as s:
         s.ehlo("localhost")
         s.starttls(context=ctx)
         s.ehlo("localhost")
