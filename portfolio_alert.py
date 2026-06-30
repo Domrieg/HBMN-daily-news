@@ -4,15 +4,15 @@ Daily Portfolio Alert — GitHub Actions Version
 Credentials werden als Umgebungsvariablen übergeben (GitHub Secrets).
 """
 
-import smtplib, ssl, requests, time, os, socket
+import smtplib, ssl, requests, time, os
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from datetime import datetime, timedelta, timezone
 
 # ─── Konfiguration (via GitHub Secrets) ───────────────────────────────────────
-EMAIL_FROM     = os.environ["EMAIL_FROM"]
-EMAIL_TO       = os.environ["EMAIL_TO"]
-EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]
+EMAIL_FROM     = os.environ["EMAIL_FROM"]      # domrieger@hotmail.com
+EMAIL_TO       = os.environ["EMAIL_TO"]        # domrieger@hotmail.com
+EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]  # App-Passwort
 SMTP_HOST      = "smtp-mail.outlook.com"
 SMTP_PORT      = 465
 
@@ -241,15 +241,6 @@ def build_html(rows, movers_up, movers_dn, news_items, today):
   </div>
 </div></body></html>"""
 
-class _SMTP_SSL_IPv4(smtplib.SMTP_SSL):
-    def _get_socket(self, host, port, timeout):
-        af, socktype, proto, _, sa = socket.getaddrinfo(
-            host, port, socket.AF_INET, socket.SOCK_STREAM)[0]
-        sock = socket.socket(af, socktype, proto)
-        sock.settimeout(timeout)
-        sock.connect(sa)
-        return self.context.wrap_socket(sock, server_hostname=self._host)
-
 def send_email(subject, html_body):
     msg = MIMEMultipart("alternative")
     msg["Subject"] = subject
@@ -257,7 +248,7 @@ def send_email(subject, html_body):
     msg["To"]      = EMAIL_TO
     msg.attach(MIMEText(html_body, "html"))
     ctx = ssl.create_default_context()
-    with _SMTP_SSL_IPv4(SMTP_HOST, SMTP_PORT, context=ctx, timeout=30) as s:
+    with smtplib.SMTP_SSL(SMTP_HOST, SMTP_PORT, context=ctx, timeout=30) as s:
         s.login(EMAIL_FROM, EMAIL_PASSWORD)
         s.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
     print(f"Mail gesendet an {EMAIL_TO}")
