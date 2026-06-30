@@ -3,6 +3,7 @@ name: Daily Portfolio Alert
 on:
   schedule:
     - cron: '30 7 * * 1-5'   # Mo–Fr 05:30 UTC = 07:30 MESZ
+    - cron: '0 14 * * 1-5'
   workflow_dispatch:           # manueller Start per Klick möglich
 
 jobs:
