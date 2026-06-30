@@ -1,0 +1,28 @@
+name: Daily Portfolio Alert
+
+on:
+  schedule:
+    - cron: '30 7 * * 1-5'   # Mo–Fr 07:30 UTC = 09:30 MESZ
+  workflow_dispatch:           # manueller Start per Klick möglich
+
+jobs:
+  send-alert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Pakete installieren
+        run: pip install requests
+
+      - name: Portfolio Alert ausführen
+        env:
+          EMAIL_FROM:     ${{ secrets.EMAIL_FROM }}
+          EMAIL_TO:       ${{ secrets.EMAIL_TO }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python portfolio_alert.py
