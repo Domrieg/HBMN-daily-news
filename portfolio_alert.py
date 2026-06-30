@@ -10,9 +10,9 @@ from email.mime.text import MIMEText
 from datetime import datetime, timedelta, timezone
 
 # ─── Konfiguration (via GitHub Secrets) ───────────────────────────────────────
-EMAIL_FROM     = os.environ["EMAIL_FROM"]      # domrieger@hotmail.com
-EMAIL_TO       = os.environ["EMAIL_TO"]        # domrieger@hotmail.com
-EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]  # App-Passwort
+EMAIL_FROM     = os.environ["EMAIL_FROM"]
+EMAIL_TO       = os.environ["EMAIL_TO"]
+EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]
 SMTP_HOST      = "smtp-mail.outlook.com"
 SMTP_PORT      = 465
 
